@@ -2,11 +2,12 @@ import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
-import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TmxMapLoader}
+import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLayer, TmxMapLoader}
 import com.badlogic.gdx.math.Vector2
 
 import java.util
 import java.util.{Map, TreeMap}
+import scala.annotation.meta.param
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -18,6 +19,8 @@ class Main extends PortableApplication (20 * 32,21 * 32){
   // Bookmark: Tiled map managers
   private var tiledMap: TiledMap = null
   private var tiledMapRenderer: TiledMapRenderer = null
+  private var roadLayer: TiledMapTileLayer = null
+  private var grassLayer: TiledMapTileLayer = null
 
   // Bookmark: Camera manipulation
   private var zoom: Float = 0
@@ -42,6 +45,10 @@ class Main extends PortableApplication (20 * 32,21 * 32){
     setTitle("Traffic Rider")
     tiledMap = new TmxMapLoader().load("data/Tiled/highway.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+    roadLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
+    println(roadLayer)
+    grassLayer = tiledMap.getLayers.get("Tile Layer 2").asInstanceOf[TiledMapTileLayer]
+    println(grassLayer)
 
     // Bookmark: Initialize keys
     keyStatus.put(Input.Keys.A, false) // right
@@ -63,8 +70,27 @@ class Main extends PortableApplication (20 * 32,21 * 32){
   }
 
   def manageHero(): Unit ={
-    if (keyStatus.get(Input.Keys.D) || keyStatus.get(Input.Keys.RIGHT)) hero.go("RIGHT")
-    if (keyStatus.get(Input.Keys.A) || keyStatus.get(Input.Keys.LEFT)) hero.go("LEFT")
+    var goalDirection: String = ""
+    var nextPos: Float = 0f
+
+    if (keyStatus.get(Input.Keys.D) || keyStatus.get(Input.Keys.RIGHT)) {
+      goalDirection = "RIGHT"
+      nextPos = hero.getPosition.x + 1.5f
+    }
+    if (keyStatus.get(Input.Keys.A) || keyStatus.get(Input.Keys.LEFT)) {
+      goalDirection = "LEFT"
+      nextPos = hero.getPosition.x - 1.5f
+    }
+    if (isDrivable(nextPos)) {
+      hero.go(goalDirection)
+    }
+  }
+
+  def isDrivable(nextPos: Float):Boolean ={
+    if (nextPos >= getWindowWidth / 2 + 2 * 32 - 8 || (nextPos <= getWindowWidth / 2 - 64 + 8)) {
+       false
+    }
+    else true
   }
 
   override def onKeyUp(keycode: Int): Unit = {
