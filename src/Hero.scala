@@ -4,11 +4,8 @@ import ch.hevs.gdx2d.lib.interfaces.DrawableObject
 import com.badlogic.gdx.math.Vector2
 
 class Hero extends DrawableObject {
-  // Bookmark: Direction enumeration
-  object Direction extends Enumeration {
-    type Direction = Value
-    val UP, DOWN, RIGHT, LEFT, NULL = Value
-  }
+  // Bookmark: Map information
+  private val windowWidth = 20 * 32
 
   // Bookmark: Image settings
   private val SPRITE_WIDTH = 16
@@ -18,13 +15,21 @@ class Hero extends DrawableObject {
   // Bookmark: Position settings
   private val initialPosition: Vector2 = new Vector2(335,200)
   private var position: Vector2 = initialPosition
+  private var move: Boolean = false
 
   def getPosition: Vector2 = position
 
   def setPosition(newPos: Vector2): Unit = {
-
+    position = newPos
   }
 
+  def go(direction: String): Unit = {
+    direction match {
+      case "RIGHT" => position.add(1.5f, 0)
+      case "LEFT" => position.add(-1.5f, 0)
+      case _ => position.add(0, 0)
+    }
+  }
   override def draw(g: GdxGraphics): Unit = {
     g.drawTransformedPicture(position.x,position.y,90f,SPRITE_HEIGHT,SPRITE_WIDTH,carBitmap)
   }

@@ -44,14 +44,13 @@ class Main extends PortableApplication (20 * 32,21 * 32){
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
 
     // Bookmark: Initialize keys
-    keyStatus.put(Input.Keys.W, false) // up
-    keyStatus.put(Input.Keys.S, false) // down
     keyStatus.put(Input.Keys.A, false) // right
     keyStatus.put(Input.Keys.D, false) // left
   }
 
   override def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear()
+    manageHero()
     g.zoom(zoom)
 
     tiledMapRenderer.setView(g.getCamera)
@@ -61,5 +60,20 @@ class Main extends PortableApplication (20 * 32,21 * 32){
 
     g.drawSchoolLogo()
     g.drawFPS()
+  }
+
+  def manageHero(): Unit ={
+    if (keyStatus.get(Input.Keys.D) || keyStatus.get(Input.Keys.RIGHT)) hero.go("RIGHT")
+    if (keyStatus.get(Input.Keys.A) || keyStatus.get(Input.Keys.LEFT)) hero.go("LEFT")
+  }
+
+  override def onKeyUp(keycode: Int): Unit = {
+    super.onKeyUp(keycode)
+    keyStatus.put(keycode, false)
+  }
+
+  override def onKeyDown(keycode: Int): Unit = {
+    super.onKeyDown(keycode)
+    keyStatus.put(keycode, true)
   }
 }
