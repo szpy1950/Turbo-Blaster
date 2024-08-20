@@ -2,7 +2,7 @@ import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
-import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLayer, TmxMapLoader}
+import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLayer, TiledMapTileSet, TmxMapLoader}
 import com.badlogic.gdx.math.Vector2
 
 import java.util
@@ -20,7 +20,8 @@ class Main extends PortableApplication (20 * 32,21 * 32){
   private var tiledMap: TiledMap = null
   private var tiledMapRenderer: TiledMapRenderer = null
   private var roadLayer: TiledMapTileLayer = null
-  private var grassLayer: TiledMapTileLayer = null
+  private var decorationLayer: TiledMapTileLayer = null
+  private var natureTiledSet: TiledMapTileSet = null
 
   // Bookmark: Camera manipulation
   private var zoom: Float = 0
@@ -46,9 +47,8 @@ class Main extends PortableApplication (20 * 32,21 * 32){
     tiledMap = new TmxMapLoader().load("data/Tiled/highway.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     roadLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
-    println(roadLayer)
-    grassLayer = tiledMap.getLayers.get("Tile Layer 2").asInstanceOf[TiledMapTileLayer]
-    println(grassLayer)
+    decorationLayer = tiledMap.getLayers.get("Tile Layer 2").asInstanceOf[TiledMapTileLayer]
+    natureTiledSet = tiledMap.getTileSets.getTileSet("TopDownTileset")
 
     // Bookmark: Initialize keys
     keyStatus.put(Input.Keys.A, false) // right
@@ -58,7 +58,9 @@ class Main extends PortableApplication (20 * 32,21 * 32){
   override def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear()
     manageHero()
+
     g.zoom(zoom)
+    g.moveCamera(hero.getPosition.x, hero.getPosition.y, roadLayer.getWidth * roadLayer.getTileWidth, roadLayer.getHeight * roadLayer.getTileHeight)
 
     tiledMapRenderer.setView(g.getCamera)
     tiledMapRenderer.render()
@@ -72,6 +74,9 @@ class Main extends PortableApplication (20 * 32,21 * 32){
   def manageHero(): Unit ={
     var goalDirection: String = ""
     var nextPos: Float = 0f
+
+    // Autodrive
+    hero.go("UP")
 
     if (keyStatus.get(Input.Keys.D) || keyStatus.get(Input.Keys.RIGHT)) {
       goalDirection = "RIGHT"

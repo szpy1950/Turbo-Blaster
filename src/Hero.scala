@@ -13,7 +13,7 @@ class Hero extends DrawableObject {
   private val carBitmap: BitmapImage = new BitmapImage("data/Res/Characters/RedStrip.png")
 
   // Bookmark: Position settings
-  private val initialPosition: Vector2 = new Vector2(335,200)
+  private val initialPosition: Vector2 = new Vector2(335,100)
   private var position: Vector2 = initialPosition
   private var move: Boolean = false
 
@@ -27,6 +27,8 @@ class Hero extends DrawableObject {
     direction match {
       case "RIGHT" => position.add(1.5f, 0)
       case "LEFT" => position.add(-1.5f, 0)
+      // Todo: to delete
+      case "UP" => position.add(0,1.5f)
       case _ => position.add(0, 0)
     }
   }
