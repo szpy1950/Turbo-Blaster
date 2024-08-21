@@ -1,6 +1,6 @@
 import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
-import com.badlogic.gdx.Input
+import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
@@ -113,42 +113,57 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   }
 
   def generate(): Unit = {
-    println("hello")
-    var layer: TiledMapTileLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
-    var layer1: TiledMapTileLayer = tiledMap.getLayers.get("Tile Layer 2").asInstanceOf[TiledMapTileLayer]
-    println(layer.getHeight)
+    if (hero.getPosition.y + getWindowHeight / 2 >= tileLayer.getHeight * 32) {
+      var layer: TiledMapTileLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
+      var layer1: TiledMapTileLayer = tiledMap.getLayers.get("Tile Layer 2").asInstanceOf[TiledMapTileLayer]
 
-    // Bookmark: Rebuild old layer into new
-    val newLayer = new TiledMapTileLayer(layer.getWidth, layer.getHeight + 1, 32, 32) // Adds one more row to map
-    val newLayer1 = new TiledMapTileLayer(layer1.getWidth, layer1.getHeight + 1, 32, 32)
-    for (x <- 0 until layer.getWidth; y <- 0 until layer.getHeight) { // Retrieves all previous map information
-      newLayer.setCell(x, y, layer.getCell(x, y))
-      newLayer1.setCell(x, y, layer1.getCell(x, y))
-    }
-
-    // Bookmark: Prepare tile type and position to add
-    val grassTile: StaticTiledMapTile = new StaticTiledMapTile(natureTiledSet.getTile(417).getTextureRegion)
-    val roadTile: StaticTiledMapTile = new StaticTiledMapTile(roadTiledSet.getTile(51).getTextureRegion)
-
-    val cell: Cell = new Cell
-    for (x <- 0 to newLayer.getWidth) {
-      if (x < getWindowWidth / 2 + 2 * 32 - 8 && (x > getWindowWidth / 2 - 64 + 8)){
-        cell.setTile(roadTile)
+      // Bookmark: Rebuild old layer into new
+      val newLayer = new TiledMapTileLayer(layer.getWidth, layer.getHeight + 1, 32, 32) // Adds one more row to map
+      val newLayer1 = new TiledMapTileLayer(layer1.getWidth, layer1.getHeight + 1, 32, 32)
+      for (x <- 0 until layer.getWidth; y <- 0 until layer.getHeight) { // Retrieves all previous map information
+        newLayer.setCell(x, y, layer.getCell(x, y))
+        newLayer1.setCell(x, y, layer1.getCell(x, y))
       }
-      else {
-        cell.setTile(grassTile)
+
+      // Bookmark: Delete unnecessary tiles
+      for (x <- 0 until layer.getWidth by 32; y <- 0 until hero.getPosition.y.toInt - 64 by 32) {
+        newLayer.setCell(x, y, null)
       }
-      newLayer.setCell(x, newLayer.getHeight - 1, cell)
+
+      // Bookmark: Prepare tile type and position to add
+      val grassTile: StaticTiledMapTile = new StaticTiledMapTile(natureTiledSet.getTile(417).getTextureRegion)
+      val roadTile1: StaticTiledMapTile = new StaticTiledMapTile(roadTiledSet.getTile(51).getTextureRegion)
+      val roadTile2: StaticTiledMapTile = new StaticTiledMapTile(roadTiledSet.getTile(52).getTextureRegion)
+
+      var cell: Cell = null
+      for (x <- 0 to newLayer.getWidth) {
+        if (x == 8 || x == 10) {
+          cell = new Cell
+          cell.setTile(roadTile1)
+          newLayer.setCell(x, newLayer.getHeight - 1, cell)
+        }
+        else if (x == 9 || x == 11) {
+          cell = new Cell
+          cell.setTile(roadTile2)
+          newLayer.setCell(x, newLayer.getHeight - 1,cell)
+        }
+        else {
+          println("nigga")
+          cell = new Cell
+          cell.setTile(grassTile)
+          newLayer.setCell(x, newLayer.getHeight - 1, cell)
+        }
+      }
+
+
+      // Bookmark: Update layer
+      newLayer.setName("Tile Layer 1")
+      newLayer1.setName("Tile Layer 2")
+      tiledMap.getLayers.remove(layer)
+      tiledMap.getLayers.remove(layer1)
+      tiledMap.getLayers.add(newLayer)
+      tiledMap.getLayers.add(newLayer1)
+      tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     }
-
-
-    // Bookmark: Update layer
-    newLayer.setName("Tile Layer 1")
-    newLayer1.setName("Tile Layer 2")
-    tiledMap.getLayers.remove(layer)
-    tiledMap.getLayers.remove(layer1)
-    tiledMap.getLayers.add(newLayer)
-    tiledMap.getLayers.add(newLayer1)
-    tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
   }
 }

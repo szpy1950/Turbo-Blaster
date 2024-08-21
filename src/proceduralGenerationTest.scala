@@ -20,6 +20,8 @@ class proceduralGenerationTest extends PortableApplication {
     tiledMap = new TmxMapLoader().load("data/Tiled/highway.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     tiledSet = tiledMap.getTileSets.getTileSet("TopDownTileset")
+
+//    tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer].setCell(0, 0, null)
   }
   override def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear()
@@ -46,6 +48,11 @@ class proceduralGenerationTest extends PortableApplication {
       for (x <- 0 until layer.getWidth; y <- 0 until layer.getHeight) { // Retrieves all previous map information
         newLayer.setCell(x, y, layer.getCell(x, y))
         newLayer1.setCell(x, y, layer1.getCell(x, y))
+      }
+
+      // Bookmark: Remove unneeded cells
+      for (x <- 0 until layer.getWidth; y <- 0 until cameraPosition.y.toInt - 1000) {
+        newLayer.setCell(x,y,null)
       }
 
       // Bookmark: Prepare tile type and position to add
