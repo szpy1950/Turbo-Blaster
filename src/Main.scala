@@ -4,12 +4,11 @@ import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
-import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLayer, TiledMapTileSet, TmxMapLoader}
+import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLayer, TiledMapTileSet, TmxMapLoader, tiles}
 import com.badlogic.gdx.math.Vector2
 
 import java.util
-import java.util.{Map, TreeMap}
-import scala.annotation.meta.param
+import scala.util.Random
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -18,12 +17,17 @@ object Main {
 }
 
 class Main extends PortableApplication(20 * 32, 21 * 32) {
+  /*
+  Section: Variable list
+   */
+
   // Bookmark: Tiled map managers
   private var tiledMap: TiledMap = null
   private var tiledMapRenderer: TiledMapRenderer = null
   private var natureTiledSet: TiledMapTileSet = null
   private var roadTiledSet: TiledMapTileSet = null
   private var tileLayer: TiledMapTileLayer = null
+  private var tileSwitch: Boolean = false
 
   // Bookmark: Camera manipulation
   private var zoom: Float = 0
@@ -35,6 +39,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   // Bookmark: Key management
   private val keyStatus: util.Map[Integer, Boolean] = new util.TreeMap[Integer, Boolean]
 
+  /*
+  Section: Initialization
+   */
 
   override def onInit(): Unit = {
     // Bookmark: Set zoom
@@ -58,6 +65,10 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     tileLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
   }
 
+  /*
+  Section: Execution
+   */
+
   override def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear()
     manageHero()
@@ -74,6 +85,10 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     g.drawSchoolLogo()
     g.drawFPS()
   }
+
+  /*
+  Section: Hero movement
+   */
 
   def manageHero(): Unit = {
     var goalDirection: String = ""
@@ -101,7 +116,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
     else true
   }
-
   override def onKeyUp(keycode: Int): Unit = {
     super.onKeyUp(keycode)
     keyStatus.put(keycode, false)
@@ -111,6 +125,10 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     super.onKeyDown(keycode)
     keyStatus.put(keycode, true)
   }
+
+  /*
+  Section: Procedural generation
+   */
 
   def generate(): Unit = {
     if (hero.getPosition.y + getWindowHeight / 2 >= tileLayer.getHeight * 32) {
@@ -134,8 +152,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
       val grassTile: StaticTiledMapTile = new StaticTiledMapTile(natureTiledSet.getTile(417).getTextureRegion)
       val roadTile1: StaticTiledMapTile = new StaticTiledMapTile(roadTiledSet.getTile(51).getTextureRegion)
       val roadTile2: StaticTiledMapTile = new StaticTiledMapTile(roadTiledSet.getTile(52).getTextureRegion)
-
       var cell: Cell = null
+
       for (x <- 0 to newLayer.getWidth) {
         if (x == 8 || x == 10) {
           cell = new Cell
@@ -148,11 +166,11 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
           newLayer.setCell(x, newLayer.getHeight - 1,cell)
         }
         else {
-          println("nigga")
           cell = new Cell
           cell.setTile(grassTile)
           newLayer.setCell(x, newLayer.getHeight - 1, cell)
         }
+        vegetationGenerator(newLayer1)
       }
 
 
@@ -164,6 +182,34 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
       tiledMap.getLayers.add(newLayer)
       tiledMap.getLayers.add(newLayer1)
       tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+    }
+  }
+
+  def vegetationGenerator(layer: TiledMapTileLayer): Unit = {
+    val shrubTile: StaticTiledMapTile = new StaticTiledMapTile(natureTiledSet.getTile(368).getTextureRegion)
+    var cell: Cell = null
+    val trees: Array[Int] = Array(334,335,320,321)
+    var vegeTile: StaticTiledMapTile = null
+
+    if (!tileSwitch) tileSwitch = true
+    else tileSwitch = false
+
+    for (x <- 0 to layer.getWidth) {
+      if (x == 7 || x == 12) {
+        cell = new Cell
+        cell.setTile(shrubTile)
+        layer.setCell(x,layer.getHeight -1,cell)
+      }
+      if (tileSwitch && (x == 6 || x == 13)) {
+        val ID = Random.shuffle(trees).head
+        cell = new Cell
+        vegeTile = new StaticTiledMapTile(natureTiledSet.getTile(ID).getTextureRegion)
+        cell.setTile(vegeTile)
+        layer.setCell(x,layer.getHeight - 1,cell)
+      }
+      else {
+        layer.setCell(x,layer.getHeight - 1,null)
+      }
     }
   }
 }
