@@ -1,5 +1,7 @@
 import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
+import ch.hevs.gdx2d.lib.utils.Logger
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -33,8 +35,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   private var zoom: Float = 0
   private var cameraPosition = new Vector2(0, 0)
 
-  // Bookmark: Hero settings
+  // Bookmark: Character settings
   private var hero: Hero = null
+  private var enemy: Enemy = null
 
   // Bookmark: Key management
   private val keyStatus: util.Map[Integer, Boolean] = new util.TreeMap[Integer, Boolean]
@@ -47,8 +50,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     // Bookmark: Set zoom
     zoom = 0.5f
 
-    // Bookmark: Create hero
+    // Bookmark: Create characters
     hero = new Hero
+    enemy = new Enemy
 
     // Bookmark: Create map
     setTitle("Traffic Rider")
@@ -63,6 +67,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Bookmark: Layer references
     tileLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
+
+    Logger.log("New session")
   }
 
   /*
@@ -70,24 +76,32 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
    */
 
   override def onGraphicRender(g: GdxGraphics): Unit = {
+    // Bookmark: cleanup
     g.clear()
+
+    // Bookmark: Character managers
     manageHero()
+    manageEnemy()
+    checkCollision()
 
+    // Bookmark: Camera management
     g.zoom(zoom)
-    g.moveCamera(hero.getPosition.x - 150, hero.getPosition.y - 20)
-    generate()
+    g.moveCamera(hero.getPosition.x - 160, hero.getPosition.y - 20)
 
+    // Bookmark: Procedural generation
+    generate()
     tiledMapRenderer.setView(g.getCamera)
     tiledMapRenderer.render()
 
+    // Bookmark: Drawing all graphical elements
     hero.draw(g)
-
+    enemy.draw(g)
     g.drawSchoolLogo()
     g.drawFPS()
   }
 
   /*
-  Section: Hero movement
+  Section: Character management
    */
 
   def manageHero(): Unit = {
@@ -107,6 +121,19 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
     if (isDrivable(nextPos)) {
       hero.go(goalDirection)
+    }
+  }
+
+  def manageEnemy(): Unit ={
+    enemy.drive()
+  }
+
+  def checkCollision(): Unit ={
+    hero.setRectangle(hero.getPosition,16,16 + 15)
+    enemy.setRectangle(enemy.getPosition,16,16 + 15)
+
+    if (hero.getRectangle.overlaps(enemy.getRectangle)) {
+      Logger.log("Crash !!!")
     }
   }
 
@@ -185,6 +212,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
   }
 
+  // Bookmark: Generate vegetation to look nice
   def vegetationGenerator(layer: TiledMapTileLayer): Unit = {
     val shrubTile: StaticTiledMapTile = new StaticTiledMapTile(natureTiledSet.getTile(368).getTextureRegion)
     var cell: Cell = null
@@ -211,5 +239,14 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
         layer.setCell(x,layer.getHeight - 1,null)
       }
     }
+  }
+
+  /*
+  Section: Finishing off
+   */
+
+  override def onDispose(): Unit = {
+    super.onDispose()
+    Logger.log("Bye bye")
   }
 }
