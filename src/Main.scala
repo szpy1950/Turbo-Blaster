@@ -200,7 +200,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
         cell.setTile(shrubTile)
         layer.setCell(x,layer.getHeight -1,cell)
       }
-      if (tileSwitch && (x == 6 || x == 13)) {
+      else if (tileSwitch && (x == 6 || x == 13)) {
         val ID = Random.shuffle(trees).head
         cell = new Cell
         vegeTile = new StaticTiledMapTile(natureTiledSet.getTile(ID).getTextureRegion)
