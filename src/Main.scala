@@ -88,8 +88,10 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     g.clear()
 
     // Bookmark: Character managers
-    manageHero()
-    manageEnemy()
+    if (!isGameOver) {
+      manageHero()
+      manageEnemy()
+    }
     checkCollision()
 
     // Bookmark: Camera management
@@ -105,6 +107,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     hero.draw(g)
     enemy.draw(g)
     explosion.draw(g)
+    if (isGameOver) {
+      g.drawString(hero.getPosition.x - 48,hero.getPosition.y + 100,"GAME OVER")
+    }
     g.drawSchoolLogo()
     g.drawFPS()
 
@@ -144,7 +149,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     enemy.setRectangle(enemy.getPosition,16,16 + 15)
 
     if (hero.getRectangle.overlaps(enemy.getRectangle)) {
-      Logger.log("Crash !!!")
       gameover()
     }
   }
@@ -164,6 +168,20 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   override def onKeyDown(keycode: Int): Unit = {
     super.onKeyDown(keycode)
     keyStatus.put(keycode, true)
+  }
+
+  /*
+ Section: Gameplay events
+  */
+
+  def gameover(): Unit = {
+    explosion.setPostion(hero.getPosition.x,hero.getPosition.y + 16)
+    explosion.show = true
+    isGameOver = true
+
+    if (keyStatus.get(Input.Keys.SPACE)) {
+      onInit()
+    }
   }
 
   /*
@@ -254,14 +272,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
   }
 
-  /*
-  Section: Pause Screens
-   */
-
-  def gameover(): Unit = {
-    explosion.setPostion(hero.getPosition.x,hero.getPosition.y)
-    explosion.show = true
-  }
 
   /*
   Section: Finishing off
