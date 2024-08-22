@@ -35,12 +35,16 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   private var zoom: Float = 0
   private var cameraPosition = new Vector2(0, 0)
 
-  // Bookmark: Character settings
+  // Bookmark: Sprite settings
   private var hero: Hero = null
   private var enemy: Enemy = null
+  private var explosion: Explosion = null
 
   // Bookmark: Key management
   private val keyStatus: util.Map[Integer, Boolean] = new util.TreeMap[Integer, Boolean]
+
+  // Bookmark: Gameplay booleans
+  private var isGameOver: Boolean = false
 
   /*
   Section: Initialization
@@ -53,6 +57,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     // Bookmark: Create characters
     hero = new Hero
     enemy = new Enemy
+    explosion = new Explosion
 
     // Bookmark: Create map
     setTitle("Traffic Rider")
@@ -67,6 +72,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Bookmark: Layer references
     tileLayer = tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer]
+
+    // Bookmark: Set game over to false
+    isGameOver = false
 
     Logger.log("New session")
   }
@@ -96,8 +104,11 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     // Bookmark: Drawing all graphical elements
     hero.draw(g)
     enemy.draw(g)
+    explosion.draw(g)
     g.drawSchoolLogo()
     g.drawFPS()
+
+    // Bookmark: Pause if gameOver
   }
 
   /*
@@ -134,6 +145,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     if (hero.getRectangle.overlaps(enemy.getRectangle)) {
       Logger.log("Crash !!!")
+      gameover()
     }
   }
 
@@ -143,6 +155,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
     else true
   }
+
   override def onKeyUp(keycode: Int): Unit = {
     super.onKeyUp(keycode)
     keyStatus.put(keycode, false)
@@ -239,6 +252,15 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
         layer.setCell(x,layer.getHeight - 1,null)
       }
     }
+  }
+
+  /*
+  Section: Pause Screens
+   */
+
+  def gameover(): Unit = {
+    explosion.setPostion(hero.getPosition.x,hero.getPosition.y)
+    explosion.show = true
   }
 
   /*

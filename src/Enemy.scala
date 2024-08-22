@@ -36,6 +36,8 @@ class Enemy extends DrawableObject {
   // Bookmark: Rectangle
   private val rectangle = new Rectangle()
 
+  var show: Boolean = true
+
   /*
   Section: Methods
    */
@@ -64,7 +66,8 @@ class Enemy extends DrawableObject {
   }
 
   override def draw(g: GdxGraphics): Unit = {
-    g.drawTransformedPicture(position.x,position.y,orientation,SPRITE_HEIGHT,SPRITE_WIDTH,carBitmap)
-    g.drawRectangle(position.x,position.y,SPRITE_WIDTH,SPRITE_HEIGHT + 12,0)
+    if (show) {
+      g.drawTransformedPicture(position.x, position.y, orientation, SPRITE_HEIGHT, SPRITE_WIDTH, carBitmap)
+    }
   }
 }

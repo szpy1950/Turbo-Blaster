@@ -8,6 +8,7 @@ class Hero extends DrawableObject {
   /*
   Section: Variables
    */
+
   // Bookmark: Map information
   private val windowWidth = 20 * 32
 
@@ -22,6 +23,8 @@ class Hero extends DrawableObject {
 
   // Bookmark: Rectangle
   private val rectangle: Rectangle = new Rectangle()
+
+  var show: Boolean = true
 
   /*
   Section: Methods
@@ -52,7 +55,8 @@ class Hero extends DrawableObject {
   }
 
   override def draw(g: GdxGraphics): Unit = {
-    g.drawTransformedPicture(position.x,position.y,90f,SPRITE_HEIGHT,SPRITE_WIDTH,carBitmap)
-    g.drawRectangle(position.x,position.y,SPRITE_WIDTH,SPRITE_HEIGHT + 15,0)
+    if (show) {
+      g.drawTransformedPicture(position.x, position.y, 90f, SPRITE_HEIGHT, SPRITE_WIDTH, carBitmap)
+    }
   }
 }
