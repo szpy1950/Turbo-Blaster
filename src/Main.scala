@@ -128,6 +128,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   def manageHero(): Unit = {
     var goalDirection: String = ""
     var nextPos: Float = 0f
+    Logger.log(hero.getPosition.y.toString)
 
     // Autodrive
     hero.go("UP")

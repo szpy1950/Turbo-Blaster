@@ -25,7 +25,7 @@ class Enemy extends DrawableObject {
 
   // Bookmark: Position settings
   private val initX: Array[Int] = Array(335, 335 + 32, 335 - 32, 335 - 64)
-  private val initialPosition: Vector2 = new Vector2(initX(Random.nextInt(initX.length)), (windowHeight * 0.5 + 3 * SPRITE_HEIGHT).toInt)
+  private val initialPosition: Vector2 = new Vector2(initX(Random.nextInt(initX.length)), (hero.getPosition.y + 10 * SPRITE_HEIGHT).toInt)
   private var orientation: Float = 0
 
   if (initialPosition.x < 335) {
