@@ -48,6 +48,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   // Bookmark: Gameplay booleans
   private var isGameOver: Boolean = false
 
+  // Bookmark: Timer
+  var timer: Float = 0
+
   /*
   Section: Initialization
    */
@@ -89,6 +92,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   override def onGraphicRender(g: GdxGraphics): Unit = {
     // Bookmark: cleanup
     g.clear()
+    timer += Gdx.graphics.getDeltaTime
+    Logger.log(timer.toString)
 
     // Bookmark: Character managers
     if (!isGameOver) {
@@ -128,7 +133,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   def manageHero(): Unit = {
     var goalDirection: String = ""
     var nextPos: Float = 0f
-    Logger.log(hero.getPosition.y.toString)
 
     // Autodrive
     hero.go("UP")
