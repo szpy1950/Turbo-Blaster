@@ -62,7 +62,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     // Bookmark: Create characters
     hero = new Hero
 //    enemy = new Enemy
-    enemies = ArrayBuffer[Enemy](new Enemy,new Enemy,new Enemy)
+    enemies = ArrayBuffer[Enemy]()
     explosion = new Explosion
 
     // Bookmark: Create map
@@ -97,6 +97,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Bookmark: Character managers
     if (!isGameOver) {
+      spawnEnemies()
       manageHero()
       manageEnemy()
     }
@@ -148,6 +149,15 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
     if (isDrivable(nextPos)) {
       hero.go(goalDirection)
+    }
+  }
+
+  def spawnEnemies(): Unit ={
+    if (timer.toInt == 2) {
+      for (i <- 0 to Random.nextInt(5)) {
+        enemies += new Enemy(hero.getPosition.y)
+      }
+      timer -= 2
     }
   }
 

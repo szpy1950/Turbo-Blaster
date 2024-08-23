@@ -5,12 +5,11 @@ import com.badlogic.gdx.math.{Rectangle, Vector2}
 
 import scala.util.Random
 
-class Enemy extends DrawableObject {
+class Enemy (heroPositionY: Float) extends DrawableObject {
   /*
   Section: Variables
    */
 
-  val hero = new Hero
 
   // Bookmark: Map information
   private val windowWidth: Int = 20 * 32
@@ -25,7 +24,7 @@ class Enemy extends DrawableObject {
 
   // Bookmark: Position settings
   private val initX: Array[Int] = Array(335, 335 + 32, 335 - 32, 335 - 64)
-  private val initialPosition: Vector2 = new Vector2(initX(Random.nextInt(initX.length)), (hero.getPosition.y + 10 * SPRITE_HEIGHT).toInt)
+  private val initialPosition: Vector2 = new Vector2(initX(Random.nextInt(initX.length)), (heroPositionY + 20 * SPRITE_HEIGHT).toInt)
   private var orientation: Float = 0
 
   if (initialPosition.x < 335) {
@@ -59,7 +58,7 @@ class Enemy extends DrawableObject {
 
   def drive(): Unit = {
     if (orientation == 90f) {
-      position.add(0,1f)
+      position.add(0,1.0f)
     }
     else {
       position.add(0,-1.5f)
