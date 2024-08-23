@@ -1,3 +1,5 @@
+package Testing
+
 import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
@@ -9,8 +11,6 @@ class Enemy extends DrawableObject {
   /*
   Section: Variables
    */
-
-  val hero = new Hero
 
   // Bookmark: Map information
   private val windowWidth: Int = 20 * 32
@@ -27,7 +27,6 @@ class Enemy extends DrawableObject {
   private val initX: Array[Int] = Array(335, 335 + 32, 335 - 32, 335 - 64)
   private val initialPosition: Vector2 = new Vector2(initX(Random.nextInt(initX.length)), (windowHeight * 0.5 + 3 * SPRITE_HEIGHT).toInt)
   private var orientation: Float = 0
-
   if (initialPosition.x < 335) {
     orientation = 270f
   }

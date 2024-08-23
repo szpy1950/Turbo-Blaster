@@ -1,3 +1,5 @@
+package Testing
+
 import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Input
@@ -7,12 +9,16 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.Vector2
 
-class proceduralGenerationTest extends PortableApplication {
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
+
+class Test extends PortableApplication {
   var tiledMap: TiledMap = null
   var tiledMapRenderer: OrthogonalTiledMapRenderer = null
   val zoom = 0.5f
   var tiledSet: TiledMapTileSet = null
   var cameraPosition: Vector2 = new Vector2(0,0)
+  var enemies: ArrayBuffer[Enemy] = null
 
   override def onInit(): Unit = {
 
@@ -20,6 +26,7 @@ class proceduralGenerationTest extends PortableApplication {
     tiledMap = new TmxMapLoader().load("data/Tiled/highway.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     tiledSet = tiledMap.getTileSets.getTileSet("TopDownTileset")
+    enemies = new ArrayBuffer[Enemy]()
 
 //    tiledMap.getLayers.get("Tile Layer 1").asInstanceOf[TiledMapTileLayer].setCell(0, 0, null)
   }
@@ -28,6 +35,10 @@ class proceduralGenerationTest extends PortableApplication {
     g.zoom(zoom)
     g.moveCamera(cameraPosition.x,cameraPosition.y)
     generate()
+
+    for (i <- enemies) {
+      i.draw(g)
+    }
 
     tiledMapRenderer.setView(g.getCamera)
     tiledMapRenderer.render()
@@ -83,11 +94,18 @@ class proceduralGenerationTest extends PortableApplication {
       case Input.Keys.D => cameraPosition.add(32,0)
       case Input.Keys.A => cameraPosition.add(-32,0)
       case Input.Keys.S => cameraPosition.add(0,-32)
+      case Input.Keys.SPACE => SpawnEnemies()
       case _ =>
+    }
+  }
+
+  private def SpawnEnemies(): Unit = {
+    for (i <- 0 to Random.nextInt(5)) {
+      enemies += new Enemy
     }
   }
 }
 
-object proceduralGenerationTest {
-  def main (args: Array[String]):Unit = new proceduralGenerationTest
+object Test {
+  def main (args: Array[String]):Unit = new Test
 }

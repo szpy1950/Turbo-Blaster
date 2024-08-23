@@ -20,6 +20,7 @@ class Hero extends DrawableObject {
   // Bookmark: Position settings
   private val initialPosition: Vector2 = new Vector2(335,100)
   private var position: Vector2 = initialPosition
+  private var displacement: Float = 0
 
   // Bookmark: Rectangle
   private val rectangle: Rectangle = new Rectangle()
@@ -42,6 +43,14 @@ class Hero extends DrawableObject {
 
   def setRectangle(position: Vector2, width: Int, height: Int): Unit = {
     rectangle.set(position.x - 8,position.y - 8,width,height)
+  }
+
+  def setDisplacement(distance: Float): Unit = {
+    displacement += distance
+  }
+
+  def getDisplacement:Float ={
+    displacement
   }
 
   def go(direction: String): Unit = {

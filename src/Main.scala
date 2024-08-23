@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapRenderer, TiledMapTileLaye
 import com.badlogic.gdx.math.Vector2
 
 import java.util
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 object Main {
@@ -37,7 +38,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
   // Bookmark: Sprite settings
   private var hero: Hero = null
-  private var enemy: Enemy = null
+//  private var enemy: Enemy = null
+  private var enemies: ArrayBuffer[Enemy] = null
   private var explosion: Explosion = null
 
   // Bookmark: Key management
@@ -56,7 +58,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Bookmark: Create characters
     hero = new Hero
-    enemy = new Enemy
+//    enemy = new Enemy
+    enemies = ArrayBuffer[Enemy](new Enemy,new Enemy,new Enemy)
     explosion = new Explosion
 
     // Bookmark: Create map
@@ -105,7 +108,9 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Bookmark: Drawing all graphical elements
     hero.draw(g)
-    enemy.draw(g)
+    for (enemy <- enemies) {
+      enemy.draw(g)
+    }
     explosion.draw(g)
     if (isGameOver) {
       g.drawString(hero.getPosition.x - 48,hero.getPosition.y + 100,"GAME OVER")
@@ -126,6 +131,7 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     // Autodrive
     hero.go("UP")
+    hero.setDisplacement(1.5f)
 
     if (keyStatus.get(Input.Keys.D) || keyStatus.get(Input.Keys.RIGHT)) {
       goalDirection = "RIGHT"
@@ -141,15 +147,19 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   }
 
   def manageEnemy(): Unit ={
-    enemy.drive()
+    for (enemy <- enemies) {
+      enemy.drive()
+    }
   }
 
   def checkCollision(): Unit ={
     hero.setRectangle(hero.getPosition,16,16 + 15)
-    enemy.setRectangle(enemy.getPosition,16,16 + 15)
+    for (enemy <- enemies){
+      enemy.setRectangle(enemy.getPosition,16,16 + 15)
 
-    if (hero.getRectangle.overlaps(enemy.getRectangle)) {
-      gameover()
+      if (hero.getRectangle.overlaps(enemy.getRectangle)) {
+        gameover()
+      }
     }
   }
 
