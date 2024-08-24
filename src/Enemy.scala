@@ -5,11 +5,11 @@ import com.badlogic.gdx.math.{Rectangle, Vector2}
 
 import scala.util.Random
 
-class Enemy (heroPositionY: Float) extends DrawableObject {
+class Enemy (var heroPositionY: Float, deltaY: Int) extends DrawableObject {
   /*
   Section: Variables
    */
-
+  heroPositionY += deltaY
 
   // Bookmark: Map information
   private val windowWidth: Int = 20 * 32

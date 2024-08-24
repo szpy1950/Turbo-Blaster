@@ -50,12 +50,15 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
   // Bookmark: Timer
   var timer: Float = 0
+  var deltaY: Int = 0
 
   /*
   Section: Initialization
    */
 
   override def onInit(): Unit = {
+    deltaY = 0
+    timer = 0
     // Bookmark: Set zoom
     zoom = 0.5f
 
@@ -100,17 +103,19 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
       spawnEnemies()
       manageHero()
       manageEnemy()
+      generate()
+      g.moveCamera(hero.getPosition.x - 160, hero.getPosition.y - 20)
+      tiledMapRenderer.setView(g.getCamera)
     }
     checkCollision()
-
+    tiledMapRenderer.render()
     // Bookmark: Camera management
     g.zoom(zoom)
-    g.moveCamera(hero.getPosition.x - 160, hero.getPosition.y - 20)
+
 
     // Bookmark: Procedural generation
-    generate()
-    tiledMapRenderer.setView(g.getCamera)
-    tiledMapRenderer.render()
+
+
 
     // Bookmark: Drawing all graphical elements
     hero.draw(g)
@@ -123,8 +128,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
     }
     g.drawSchoolLogo()
     g.drawFPS()
-
-    // Bookmark: Pause if gameOver
   }
 
   /*
@@ -155,9 +158,10 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   def spawnEnemies(): Unit ={
     if (timer.toInt == 2) {
       for (i <- 0 to Random.nextInt(5)) {
-        enemies += new Enemy(hero.getPosition.y)
+        enemies += new Enemy(hero.getPosition.y,deltaY)
       }
       timer -= 2
+      deltaY += 100
     }
   }
 
