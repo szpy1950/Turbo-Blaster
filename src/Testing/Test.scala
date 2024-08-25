@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-class Test extends PortableApplication {
+class Test extends PortableApplication (20 * 32, 21 * 32) {
   var tiledMap: TiledMap = null
   var tiledMapRenderer: OrthogonalTiledMapRenderer = null
   val zoom = 0.5f

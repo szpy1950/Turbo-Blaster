@@ -1,7 +1,7 @@
+import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.utils.Logger
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -38,7 +38,6 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
   // Bookmark: Sprite settings
   private var hero: Hero = null
-//  private var enemy: Enemy = null
   private var enemies: ArrayBuffer[Enemy] = null
   private var explosion: Explosion = null
 
@@ -47,6 +46,8 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
   // Bookmark: Gameplay booleans
   private var isGameOver: Boolean = false
+  private var mainGame: Boolean = false
+  private var startScreen: Boolean = true
 
   // Bookmark: Timer
   var timer: Float = 0
@@ -95,39 +96,43 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   override def onGraphicRender(g: GdxGraphics): Unit = {
     // Bookmark: cleanup
     g.clear()
-    timer += Gdx.graphics.getDeltaTime
-    Logger.log(timer.toString)
 
-    // Bookmark: Character managers
-    if (!isGameOver) {
-      spawnEnemies()
-      manageHero()
-      manageEnemy()
-      generate()
-      g.moveCamera(hero.getPosition.x - 160, hero.getPosition.y - 20)
-      tiledMapRenderer.setView(g.getCamera)
+    if (startScreen) {
+      start()
+      val bitMap = new BitmapImage("data/Res/loadingScreen.png")
+      g.drawBackground(bitMap,0f,0f)
     }
-    checkCollision()
-    tiledMapRenderer.render()
-    // Bookmark: Camera management
-    g.zoom(zoom)
+
+    if (mainGame) {
+      timer += Gdx.graphics.getDeltaTime
+
+      // Bookmark: Character managers
+      if (!isGameOver) {
+        spawnEnemies()
+        manageHero()
+        manageEnemy()
+        generate()
+        g.moveCamera(hero.getPosition.x - 160, hero.getPosition.y - 20)
+        tiledMapRenderer.setView(g.getCamera)
+      }
+      checkCollision()
+      tiledMapRenderer.render()
+      // Bookmark: Camera management
+      g.zoom(zoom)
 
 
-    // Bookmark: Procedural generation
-
-
-
-    // Bookmark: Drawing all graphical elements
-    hero.draw(g)
-    for (enemy <- enemies) {
-      enemy.draw(g)
+      // Bookmark: Drawing all graphical elements
+      hero.draw(g)
+      for (enemy <- enemies) {
+        enemy.draw(g)
+      }
+      explosion.draw(g)
+      if (isGameOver) {
+        g.drawString(hero.getPosition.x - 48, hero.getPosition.y + 100, "GAME OVER")
+      }
+      g.drawSchoolLogo()
+      g.drawFPS()
     }
-    explosion.draw(g)
-    if (isGameOver) {
-      g.drawString(hero.getPosition.x - 48,hero.getPosition.y + 100,"GAME OVER")
-    }
-    g.drawSchoolLogo()
-    g.drawFPS()
   }
 
   /*
@@ -156,12 +161,12 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
   }
 
   def spawnEnemies(): Unit ={
-    if (timer.toInt == 2) {
-      for (i <- 0 to Random.nextInt(5)) {
+    if (timer.toInt == 1) {
+      for (i <- 0 to Random.nextInt(3)) {
         enemies += new Enemy(hero.getPosition.y,deltaY)
       }
-      timer -= 2
-      deltaY += 100
+      timer -= 1
+      deltaY += 75
     }
   }
 
@@ -210,6 +215,13 @@ class Main extends PortableApplication(20 * 32, 21 * 32) {
 
     if (keyStatus.get(Input.Keys.SPACE)) {
       onInit()
+    }
+  }
+
+  def start(): Unit = {
+    if (keyStatus.get(Input.Keys.SPACE)) {
+      startScreen = false
+      mainGame = true
     }
   }
 

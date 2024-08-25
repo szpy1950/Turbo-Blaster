@@ -58,7 +58,7 @@ class Hero extends DrawableObject {
       case "RIGHT" => position.add(1.5f, 0)
       case "LEFT" => position.add(-1.5f, 0)
       // Todo: to delete
-      case "UP" => position.add(0,1.5f)
+      case "UP" => position.add(0,2.0f)
       case _ => position.add(0, 0)
     }
   }

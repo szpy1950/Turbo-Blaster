@@ -61,7 +61,7 @@ class Enemy (var heroPositionY: Float, deltaY: Int) extends DrawableObject {
       position.add(0,1.0f)
     }
     else {
-      position.add(0,-1.5f)
+      position.add(0,-2.5f)
     }
   }
 
